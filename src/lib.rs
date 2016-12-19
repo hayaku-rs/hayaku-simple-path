@@ -2,8 +2,7 @@
 extern crate log;
 extern crate hayaku_http;
 
-use hayaku_http::{Handler, Request, RequestHandler, ResponseWriter, Status};
-use std::io::Write;
+use hayaku_http::{Handler, Request, RequestHandler, Response, Status};
 use std::rc::Rc;
 
 pub struct Router<T: Clone> {
@@ -29,10 +28,10 @@ impl<T: Clone> Router<T> {
 }
 
 impl<T: Clone> Handler<T> for Router<T> {
-    fn handler(&self, req: &Request, res: &mut ResponseWriter, ctx: &T) {
-        let path = &req.path;
+    fn handler(&self, req: &Request, res: &mut Response, ctx: &T) {
+        let path = &req.path();
         for &(ref route, ref handle) in &self.paths {
-            if *path == route {
+            if path == route {
                 handle(req, res, ctx);
             }
         }
@@ -44,7 +43,7 @@ impl<T: Clone> Handler<T> for Router<T> {
         } else {
             res.status(Status::NotFound);
             let msg = String::from("404, path \"") + path + "\" not found :(";
-            res.write_all(msg.as_bytes()).unwrap();
+            res.body(msg.as_bytes()).unwrap();
 
         }
     }
