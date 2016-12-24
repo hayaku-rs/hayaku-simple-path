@@ -40,11 +40,11 @@ impl<T: Clone> Handler<T> for Router<T> {
 
         if self.not_found.is_some() {
             let handle = self.not_found.clone().unwrap();
-            return handle(req, res, ctx);
+            handle(req, res, ctx);
         } else {
             res.status(Status::NotFound);
             let msg = String::from("404, path \"") + path + "\" not found :(";
-            res.body(msg.as_bytes()).unwrap();
+            res.body(msg.as_bytes());
 
         }
     }
